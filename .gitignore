@@ -8,3 +8,22 @@ ipython_config.py
 # virtual environments
 ad
 
+.DS_Store
+AC_Code/.jupyter/desktop-workspaces/default-37a8.jupyterlab-workspace
+AC_Code/.jupyter/desktop-settings.json
+*.jupyterlab-workspace
+AC_Code/.jupyter/desktop-workspaces/default-37a8.jupyterlab-workspace
+AC_Code/cd_mci_ad_t1_t2/ADNI/009_S_0751/Accelerated_Sag_IR-FSPGR/2017-07-18_12_47_13.0/I876555/ADNI_009_S_0751_MR_Accelerated_Sag_IR-FSPGR_br_raw_20170719075122786_195_S585522_I876555.dcm
+AC_Code/cd_mci_ad_t1_t2/ADNI/009_S_0751/Accelerated_Sag_IR-FSPGR/2017-07-18_12_47_13.0/I876555/ADNI_009_S_0751_MR_Accelerated_Sag_IR-FSPGR_br_raw_20170719075124690_107_S585522_I876555.dcm
+AC_Code/cd_mci_ad_t1_t2/ADNI/009_S_0751/Accelerated_Sag_IR-FSPGR/2017-07-18_12_47_13.0/I876555/ADNI_009_S_0751_MR_Accelerated_Sag_IR-FSPGR_br_raw_20170719075125610_143_S585522_I876555.dcm
+*.dcm
+AC_Code/cd_mci_ad_t1_t2_11_09_2025.csv
+AC_Code/cd_mci_ad_t1_t2_dataset/ADNI/009_S_10280/Accelerated_Sag_IR-FSPGR__MSV21_/2024-10-31_15_08_23.0/nifti_converted/4_accelerated_sag_ir-fspgr_msv21.nii.gz
+AC_Code/cd_mci_ad_t1_t2_metadata/ADNI/009_S_0751/Accelerated_Sag_IR-FSPGR/2017-07-18_12_47_13.0/I876555/S585522I876555.xml
+*.xml
+*.h5
+*.gz
+AC_Code/Untitled.ipynb
+AC_Code/nifti_resampled/merged_labeled_dataset.csv
+AC_Code/nifti_resampled/clean_dataset.csv
+AC_Code/nifti_converted_all/metadata_conversion.csv
