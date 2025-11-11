@@ -27,3 +27,7 @@ AC_Code/Untitled.ipynb
 AC_Code/nifti_resampled/merged_labeled_dataset.csv
 AC_Code/nifti_resampled/clean_dataset.csv
 AC_Code/nifti_converted_all/metadata_conversion.csv
+AC_Code/HighResHippocampus_11_10_2025.csv
+*.csv
+AC_Code_SS_Datasets/CNN_early_ad_AC_SS Datasets.ipynb
+*.json
