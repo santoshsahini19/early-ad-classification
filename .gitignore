@@ -31,3 +31,5 @@ AC_Code/HighResHippocampus_11_10_2025.csv
 *.csv
 AC_Code_SS_Datasets/CNN_early_ad_AC_SS Datasets.ipynb
 *.json
+AC_Code/CNN_early_ad_AC.ipynb
+*.keras
