@@ -33,3 +33,13 @@ AC_Code_SS_Datasets/CNN_early_ad_AC_SS Datasets.ipynb
 *.json
 AC_Code/CNN_early_ad_AC.ipynb
 *.keras
+
+
+# need clean up and notes to be added files
+# need to rebuild the figured out architecture and solutions
+train_baseline.py
+test_3d_cnn.ipynb
+3d_cnn.ipynb
+config.py
+baseline.py
+model.py
