@@ -11,7 +11,7 @@ CSV_PATH = Path(r"D:\projects\research\preprocessed_metadata_128.csv")
 LOG_DIR = Path("runs")  # for TensorBoard
 
 MODEL_NAME = "resnet3d18"
-RUN_NAME = "resnet3d18_v3_128"
+RUN_NAME = "resnet3d18_v4_128"
 
 #EXPERIMENT_NAME = "3-class-deep-3dcnn-v2"
 #CHECKPOINT_DIR = Path("checkpoints")
@@ -60,6 +60,6 @@ SCHEDULER_STEP = 5
 SCHEDULER_GAMMA = 0.5
 
 EARLY_STOPPING = True
-EARLY_STOPPING_PATIENCE = 15
+EARLY_STOPPING_PATIENCE = 10
 
 #tensorboard --logdir runs
