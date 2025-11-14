@@ -6,7 +6,7 @@ Core training script
 Training details, logs, and checkpoints are all handled here.
 """
 
-import os
+import json, os
 from pathlib import Path
 
 import numpy as np
@@ -15,11 +15,11 @@ import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Subset
-#from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 import config
 from dataset import NPYDataset
-from models import Baseline3DCNN
+from models import Baseline3DCNN, Deep3DCNN, ResNet3D18
 
 
 def setup_seed(seed: int = 42):
@@ -57,26 +57,35 @@ def main():
     print(f"Using device: {device}")
 
     # Ensure output directories exist
-    config.CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    #config.CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
     config.LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     # ---- Dataset & DataLoaders ----
     print("Loading dataset...")
     dataset = NPYDataset(config.CSV_PATH)
 
-    # Stratified train/val split
-    labels_int = dataset.data["label_int"].values
-    indices = np.arange(len(dataset))
+    # # Stratified train/val split
+    # labels_int = dataset.data["label_int"].values
+    # indices = np.arange(len(dataset))
 
-    train_idx, val_idx = train_test_split(
-        indices,
-        test_size=config.VAL_SPLIT,
-        random_state=config.RANDOM_SEED,
-        stratify=labels_int,
-    )
+    # train_idx, val_idx = train_test_split(
+    #     indices,
+    #     test_size=config.VAL_SPLIT,
+    #     random_state=config.RANDOM_SEED,
+    #     stratify=labels_int,
+    # )
 
-    train_set = Subset(dataset, train_idx)
-    val_set = Subset(dataset, val_idx)
+    # ============================= RUN 1 =========================
+    # train_set = Subset(dataset, train_idx)
+    # val_set = Subset(dataset, val_idx)
+
+    # ============================= RUN 2,3 =========================
+    # train_set = Subset(NPYDataset(config.CSV_PATH, augment=config.DO_AUGMENT), train_idx)
+    # val_set = Subset(NPYDataset(config.CSV_PATH, augment=False), val_idx)
+    
+    # ============================= RUN 4,5,6,7 =========================
+    train_set = NPYDataset(config.TRAIN_CSV, augment=config.DO_AUGMENT)
+    val_set = NPYDataset(config.VAL_CSV, augment=False)
 
     train_loader = DataLoader(
         train_set,
@@ -97,7 +106,19 @@ def main():
     print(f"Train samples: {len(train_set)} | Val samples: {len(val_set)}")
 
     # ---- Model, Loss, Optimizer ----
-    model = Baseline3DCNN(num_classes=config.NUM_CLASSES).to(device)
+    #model = Baseline3DCNN(num_classes=config.NUM_CLASSES).to(device)
+
+    if config.MODEL_NAME == "simple":
+        model = Baseline3DCNN(num_classes=config.NUM_CLASSES)
+    elif config.MODEL_NAME == "deep3d":
+        model = Deep3DCNN(num_classes=config.NUM_CLASSES)
+    elif config.MODEL_NAME == "resnet3d18":
+        model = ResNet3D18(num_classes=config.NUM_CLASSES)
+    else:
+        raise ValueError(f"Unknown model name: {config.MODEL_NAME}")
+
+    model = model.to(device)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(
         model.parameters(),
@@ -105,12 +126,55 @@ def main():
         weight_decay=config.WEIGHT_DECAY,
     )
 
+    if config.USE_SCHEDULER:
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer,
+            step_size=config.SCHEDULER_STEP,
+            gamma=config.SCHEDULER_GAMMA
+        )
+
     # TensorBoard writer
-    # writer = SummaryWriter(log_dir=str(config.LOG_DIR))
+    writer = SummaryWriter(log_dir=str(config.LOG_DIR / config.RUN_NAME))
 
+    writer.add_hparams(
+        {
+            "lr": config.LEARNING_RATE,
+            "batch_size": config.BATCH_SIZE,
+            "model": config.MODEL_NAME,
+            "augment": config.DO_AUGMENT,
+            "optimizer": config.OPTIMIZER,
+        },
+        {}
+    )
     best_val_loss = float("inf")
-
     global_step = 0
+
+
+    # ==================== create config json =============================
+
+    run_dir = config.LOG_DIR / config.RUN_NAME
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    config_dict = {
+        "model_name": config.MODEL_NAME,
+        "epochs": config.EPOCHS,
+        "batch_size": config.BATCH_SIZE,
+        "learning_rate": config.LEARNING_RATE,
+        "augment": config.DO_AUGMENT,
+        "input_shape": config.INPUT_SHAPE,
+        "optimizer": config.OPTIMIZER,
+        "scheduler": config.SCHEDULER,
+        "train_csv": str(config.TRAIN_CSV),
+        "val_csv": str(config.VAL_CSV),
+        "test_csv": str(config.TEST_CSV)
+    }
+
+    with open(run_dir / "config.json", "w") as f:
+        json.dump(config_dict, f, indent=4)
+
+    print(f"Saved config.json in {run_dir}")
+
+    # ======================================================
 
     # ---- Training Loop ----
     for epoch in range(1, config.EPOCHS + 1):
@@ -134,7 +198,7 @@ def main():
 
             # Logging
             train_loss_sum += loss.item()
-            # writer.add_scalar("Loss/train_batch", loss.item(), global_step)
+            writer.add_scalar("Loss/train_batch", loss.item(), global_step)
 
             if batch_idx % config.LOG_INTERVAL == 0:
                 print(
@@ -145,7 +209,7 @@ def main():
             global_step += 1
 
         avg_train_loss = train_loss_sum / max(1, len(train_loader))
-        # writer.add_scalar("Loss/train_epoch", avg_train_loss, epoch)
+        writer.add_scalar("Loss/train_epoch", avg_train_loss, epoch)
 
         # --- Validation ---
         model.eval()
@@ -169,8 +233,8 @@ def main():
         avg_val_loss = val_loss_sum / max(1, len(val_loader))
         val_acc = 100.0 * correct / max(1, total)
 
-        # writer.add_scalar("Loss/val_epoch", avg_val_loss, epoch)
-        # writer.add_scalar("Accuracy/val_epoch", val_acc, epoch)
+        writer.add_scalar("Loss/val_epoch", avg_val_loss, epoch)
+        writer.add_scalar("Accuracy/val_epoch", val_acc, epoch)
 
         print(
             f"Epoch {epoch}: "
@@ -180,7 +244,9 @@ def main():
         )
 
         # --- Checkpointing ---
-        ckpt_path = config.CHECKPOINT_DIR / f"epoch_{epoch:03d}.pth"
+        checkpoint_dir = run_dir / "checkpoints"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        ckpt_path = checkpoint_dir / f"epoch_{epoch:03d}.pth"
 
         # Always save this epoch
         torch.save(
@@ -198,12 +264,36 @@ def main():
         # Optionally track "best" model
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            best_path = config.CHECKPOINT_DIR / "best_model.pth"
+            best_path = run_dir / "best_model.pth"
+            # torch.save(model.state_dict(), best_path)
             torch.save(model.state_dict(), best_path)
             print(f"New best model saved to {best_path}")
 
+            # reset early-stopping counter when we found a new best
+            patience_counter = 0
+        
+        # Early stopping logic
+        if config.EARLY_STOPPING:
+            if avg_val_loss < best_val_loss:
+                best_val_loss = avg_val_loss
+                patience_counter = 0
+            else:
+                patience_counter += 1
+                print(f"Early stopping patience: {patience_counter}/{config.EARLY_STOPPING_PATIENCE}")
+
+                if patience_counter >= config.EARLY_STOPPING_PATIENCE:
+                    print("Early stopping triggered!")
+                    break
+        
+        # step epoch-based scheduler after all optimizer.step() calls for the epoch
+        if config.USE_SCHEDULER:
+            scheduler.step()
+        # log learning rate for each epoch
+        writer.add_scalar("lr", scheduler.get_last_lr()[0], epoch)
+
+
     print("\nTraining complete!")
-    # writer.close()
+    writer.close()
 
 
 if __name__ == "__main__":
