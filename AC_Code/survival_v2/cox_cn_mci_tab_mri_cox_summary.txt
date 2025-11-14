@@ -1,0 +1,19 @@
+                     coef  exp(coef)  se(coef)  coef lower 95%  \
+covariate                                                        
+baseline_dx_num  1.090661   2.976242  1.237568       -1.334926   
+n_visits        -0.227628   0.796421  0.184407       -0.589059   
+AD_likeness      3.245002  25.661760  4.625029       -5.819888   
+
+                 coef upper 95%  exp(coef) lower 95%  exp(coef) upper 95%  \
+covariate                                                                   
+baseline_dx_num        3.516249             0.263178            33.657953   
+n_visits               0.133803             0.554849             1.143168   
+AD_likeness           12.309892             0.002968        221879.980626   
+
+                 cmp to         z         p  -log2(p)  
+covariate                                              
+baseline_dx_num     0.0  0.881294  0.378158  1.402937  
+n_visits            0.0 -1.234377  0.217062  2.203819  
+AD_likeness         0.0  0.701618  0.482918  1.050151  
+
+Test C-index: 0.235294

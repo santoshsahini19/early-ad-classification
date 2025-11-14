@@ -34,3 +34,4 @@ AC_Code_SS_Datasets/CNN_early_ad_AC_SS Datasets.ipynb
 AC_Code/CNN_early_ad_AC.ipynb
 *.keras
 AC_Code/folder_structure_preview.txt
+*.jupyterlab-workspace

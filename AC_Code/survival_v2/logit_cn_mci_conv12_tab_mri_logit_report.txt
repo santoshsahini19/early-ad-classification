@@ -1,0 +1,17 @@
+Model: Logit CN+MCI (conv_12m, dx + n_visits + AD_likeness)
+Label: conv_12m
+Features: ['baseline_dx_num', 'n_visits', 'AD_likeness']
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0      1.000     0.778     0.875        18
+           1      0.000     0.000     0.000         0
+
+    accuracy                          0.778        18
+   macro avg      0.500     0.389     0.438        18
+weighted avg      1.000     0.778     0.875        18
+
+Confusion matrix:
+[[14  4]
+ [ 0  0]]

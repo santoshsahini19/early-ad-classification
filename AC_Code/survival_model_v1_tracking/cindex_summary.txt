@@ -1,0 +1,2 @@
+C-index (train): 0.6448
+C-index (test):  0.5992
