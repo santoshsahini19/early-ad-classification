@@ -37,6 +37,8 @@ AC_Code/CNN_early_ad_AC.ipynb
 # SS
 __pycache__
 checkpoints
+runs
+resnet3d18-v2
 
 # need clean up and notes to be added files
 # need to rebuild the figured out architecture and solutions

@@ -2,3 +2,5 @@ pandas
 nibabel
 numpy
 matplotlib
+tensorboard
+seaborn
