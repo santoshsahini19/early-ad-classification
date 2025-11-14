@@ -14,6 +14,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import config
 
 from sklearn.metrics import (
     classification_report,
@@ -112,11 +113,10 @@ def plot_roc(y_true, y_prob, out_path):
 
 
 def main():
-    #RUN_DIR = "runs/deep3d_v2"   # <--- need to change based on current version
-    RUN_DIR = "checkpoints"
-    EXPERIMENT_DIR = "checkpoints"
+    RUN_DIR = config.LOG_DIR / config.RUN_NAME   # <--- need to change based on current version
+    #RUN_DIR = "checkpoints"
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model, cfg = load_model(EXPERIMENT_DIR, device)
+    model, cfg = load_model(RUN_DIR, device)
 
     test_loader = get_test_loader()
 

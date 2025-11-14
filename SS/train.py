@@ -57,16 +57,16 @@ def main():
     print(f"Using device: {device}")
 
     # Ensure output directories exist
-    config.CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    #config.CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
     config.LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     # ---- Dataset & DataLoaders ----
     print("Loading dataset...")
     dataset = NPYDataset(config.CSV_PATH)
 
-    # Stratified train/val split
-    labels_int = dataset.data["label_int"].values
-    indices = np.arange(len(dataset))
+    # # Stratified train/val split
+    # labels_int = dataset.data["label_int"].values
+    # indices = np.arange(len(dataset))
 
     # train_idx, val_idx = train_test_split(
     #     indices,
@@ -83,7 +83,7 @@ def main():
     # train_set = Subset(NPYDataset(config.CSV_PATH, augment=config.DO_AUGMENT), train_idx)
     # val_set = Subset(NPYDataset(config.CSV_PATH, augment=False), val_idx)
     
-    # ============================= RUN 4,5 =========================
+    # ============================= RUN 4,5,6,7 =========================
     train_set = NPYDataset(config.TRAIN_CSV, augment=config.DO_AUGMENT)
     val_set = NPYDataset(config.VAL_CSV, augment=False)
 
@@ -132,12 +132,9 @@ def main():
             step_size=config.SCHEDULER_STEP,
             gamma=config.SCHEDULER_GAMMA
         )
-    
-    # if config.USE_SCHEDULER:
-    #     scheduler.step()
 
     # TensorBoard writer
-    writer = SummaryWriter(log_dir=str(config.LOG_DIR / config.EXPERIMENT_NAME))
+    writer = SummaryWriter(log_dir=str(config.LOG_DIR / config.RUN_NAME))
 
     writer.add_hparams(
         {
@@ -153,9 +150,9 @@ def main():
     global_step = 0
 
 
-    # ==================== crete config json =============================
+    # ==================== create config json =============================
 
-    run_dir = Path(f"runs/{config.RUN_NAME}")
+    run_dir = config.LOG_DIR / config.RUN_NAME
     run_dir.mkdir(parents=True, exist_ok=True)
 
     config_dict = {
@@ -247,7 +244,9 @@ def main():
         )
 
         # --- Checkpointing ---
-        ckpt_path = config.CHECKPOINT_DIR / f"epoch_{epoch:03d}.pth"
+        checkpoint_dir = run_dir / "checkpoints"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        ckpt_path = checkpoint_dir / f"epoch_{epoch:03d}.pth"
 
         # Always save this epoch
         torch.save(
@@ -265,9 +264,9 @@ def main():
         # Optionally track "best" model
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            best_path = config.CHECKPOINT_DIR / "best_model.pth"
+            best_path = run_dir / "best_model.pth"
             # torch.save(model.state_dict(), best_path)
-            torch.save(model.state_dict(), config.CHECKPOINT_DIR / "best_model.pth")
+            torch.save(model.state_dict(), best_path)
             print(f"New best model saved to {best_path}")
 
             # reset early-stopping counter when we found a new best

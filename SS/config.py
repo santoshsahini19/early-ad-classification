@@ -7,21 +7,21 @@ Change things here instead of digging into train.py.
 from pathlib import Path
 
 # directory paths
-CSV_PATH = Path(r"D:\projects\research\preprocessed_metadata_64.csv")
-CHECKPOINT_DIR = Path("checkpoints")
+CSV_PATH = Path(r"D:\projects\research\preprocessed_metadata_128.csv")
 LOG_DIR = Path("runs")  # for TensorBoard
-#EXPERIMENT_NAME = "3-class-deep-3dcnn-v2"
-EXPERIMENT_NAME = "3-class-ResNet3D18-v2"
 
 MODEL_NAME = "resnet3d18"
-RUN_NAME = "resnet3d18_v2"
+RUN_NAME = "resnet3d18_v3_128"
+
+#EXPERIMENT_NAME = "3-class-deep-3dcnn-v2"
+#CHECKPOINT_DIR = Path("checkpoints")
 # MODEL_NAME = "deep3d"
 # RUN_NAME = "deep3d_v2"
 
 # csvs after the split
-TRAIN_CSV = Path(r"D:\projects\research\train_metadata_64.csv")
-VAL_CSV = Path(r"D:\projects\research\val_metadata_64.csv")
-TEST_CSV = Path(r"D:\projects\research\test_metadata_64.csv")
+TRAIN_CSV = Path(r"D:\projects\research\train_metadata_128.csv")
+VAL_CSV = Path(r"D:\projects\research\val_metadata_128.csv")
+TEST_CSV = Path(r"D:\projects\research\test_metadata_128.csv")
 
 # data variables
 NUM_CLASSES = 3          # AD / MCI / CN
@@ -35,7 +35,7 @@ WEIGHT_DECAY = 0.0
 RANDOM_SEED = 42
 VAL_SPLIT = 0.2
 
-INPUT_SHAPE = (1, 64, 64, 64)
+INPUT_SHAPE = (1, 128, 128, 128)
 OPTIMIZER = "Adam"
 SCHEDULER = "StepLR"
 
@@ -60,6 +60,6 @@ SCHEDULER_STEP = 5
 SCHEDULER_GAMMA = 0.5
 
 EARLY_STOPPING = True
-EARLY_STOPPING_PATIENCE = 10
+EARLY_STOPPING_PATIENCE = 15
 
 #tensorboard --logdir runs
